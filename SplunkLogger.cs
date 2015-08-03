@@ -73,6 +73,16 @@ namespace SplunkClient
 
 		/*
 		* Logs a string message/event to Splunk's Http Event Collector */
+		public void Log (string message)
+		{
+			string JSONstr = "{\"event\":{\"message\":\"" + message + "\", \"severity\":\"" + level + "\", \"sourcetype\":\"Mobile Application\"}}";
+			HttpContent content = new StringContent(JSONstr);
+			var resp = (HttpResponseMessage) client.PostAsync(
+				this.uri, content).Result;
+		}
+
+		/*
+		* Logs a string message/event to Splunk's Http Event Collector Async */
 		async public Task LogAsync (string message)
 		{
 			string JSONstr = "{\"event\":{\"message\":\"" + message + "\", \"severity\":\"" + level + "\"}}";

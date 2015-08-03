@@ -1,1 +1,13 @@
-﻿<Properties StartupItem="SplunkClient.csproj" />
+﻿<Properties StartupItem="SplunkClient.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SplunkLogger.cs">
+    <Files>
+      <File FileName="SplunkLogger.cs" Line="12" Column="51" />
+      <File FileName="packages.config" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
