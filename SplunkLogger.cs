@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SplunkClient
 {
@@ -72,42 +73,13 @@ namespace SplunkClient
 
 		/*
 		* Logs a string message/event to Splunk's Http Event Collector */
-		public void log (string message)
+		async public Task LogAsync (string message)
 		{
 			string JSONstr = "{\"event\":{\"message\":\"" + message + "\", \"severity\":\"" + level + "\"}}";
 			HttpContent content = new StringContent(JSONstr);
-			request (content);
-		}
 
-		private void request (HttpContent content)
-		{
-			try {
-				var resp = (HttpResponseMessage) client.PostAsync(
-					this.uri, content).Result;
-			}
-			catch(Exception ex)
-			{
-				if (exceptions == null) {
-					exceptions = new List<Exception> ();
-				}
-				exceptions.Add (ex);
-			}
-		}
-
-		/*
-		* Returns a List of Exceptions that may have occured
-		* when logging to Splunk over HTTP/HTTPS */
-		public List<Exception> GetExceptions()
-		{
-			return exceptions;
-		}
-			
-		/*
-		* Clears the List of Exceptions that may have occured
-		* when logging to Splunk over HTTP/HTTPS */
-		public void ClearExceptions()
-		{
-			exceptions.Clear ();
+			var resp = await client.PostAsync (this.uri, content);
+			resp.EnsureSuccessStatusCode ();
 		}
 	}
 }

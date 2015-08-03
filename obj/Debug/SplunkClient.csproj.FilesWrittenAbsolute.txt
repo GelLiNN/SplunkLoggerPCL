@@ -1,8 +1,8 @@
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/obj/Debug/.NETPortable,Version=v4.5,Profile=Profile78.AssemblyAttribute.cs
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/bin/Debug/SplunkClient.dll.mdb
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/bin/Debug/SplunkClient.dll
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/obj/Debug/SplunkClient.dll
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/obj/Debug/SplunkClient.dll.mdb
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/bin/Debug/System.Net.Http.dll
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/bin/Debug/System.Net.Http.Primitives.dll
-/Users/knealy/XProjects/Tasky/Android_Starter/SplunkClient/bin/Debug/System.Net.Http.Extensions.dll
+/Users/knealy/SplunkClient/SplunkStuff/obj/Debug/.NETPortable,Version=v4.5,Profile=Profile78.AssemblyAttribute.cs
+/Users/knealy/SplunkClient/SplunkStuff/bin/Debug/SplunkClient.dll.mdb
+/Users/knealy/SplunkClient/SplunkStuff/bin/Debug/SplunkClient.dll
+/Users/knealy/SplunkClient/SplunkStuff/obj/Debug/SplunkClient.dll
+/Users/knealy/SplunkClient/SplunkStuff/obj/Debug/SplunkClient.dll.mdb
+/Users/knealy/SplunkClient/SplunkStuff/bin/Debug/System.Net.Http.dll
+/Users/knealy/SplunkClient/SplunkStuff/bin/Debug/System.Net.Http.Primitives.dll
+/Users/knealy/SplunkClient/SplunkStuff/bin/Debug/System.Net.Http.Extensions.dll
