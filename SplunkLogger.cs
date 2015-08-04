@@ -16,7 +16,6 @@ namespace SplunkClient
 		private string uri;
 		private HttpClient client; 
 		private bool sslEnabled;
-		private List<Exception> exceptions;
 
 		// Keeps track of severity levels
 		private List<string> levels;
