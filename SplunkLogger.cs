@@ -66,8 +66,9 @@ namespace SplunkClient
 		* Changes the severity level of this SplunkLogger */
 		public void setLevel (string newLevel)
 		{
-			if (levels != null && levels.Contains(newLevel.ToUpper())) {
-				level = newLevel;
+            string levelVal = newLevel.ToUpper();
+			if (levels != null && levels.Contains(levelVal)) {
+				this.level = levelVal;
 			}
 		}
 
