@@ -9,3 +9,14 @@ C:\Users\Kellan\PortableLoggingLibs\splunkstuff\obj\Debug\SplunkClient.csproj.Ap
 C:\Users\Kellan\PortableLoggingLibs\splunkstuff\obj\Debug\SplunkClient.csprojResolveAssemblyReference.cache
 C:\Users\Kellan\PortableLoggingLibs\splunkstuff\obj\Debug\SplunkClient.dll
 C:\Users\Kellan\PortableLoggingLibs\splunkstuff\obj\Debug\SplunkClient.pdb
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\SplunkClient.dll.config
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\SplunkClient.dll
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\SplunkClient.pdb
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\System.Net.Http.dll
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\Kellan Nealy\splunkstuff\bin\Debug\System.Net.Http.xml
+C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.csproj.App.config
+C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.csprojResolveAssemblyReference.cache
+C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.dll
+C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.pdb
