@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SplunkClient
 {
-	/*
+    /*
 	* Logger is a portable class that easily sends data
 	* to Splunk over HTTP/HTTPS providing great abstraction
 	* for developers logging mobile data to Splunk */
-	public class SplunkLogger
+    public class SplunkLogger
 	{
 		private string level;
 		private string uri;
@@ -21,6 +20,8 @@ namespace SplunkClient
 		// Keeps track of severity levels
 		private List<string> levels;
 
+        // Keeps track of any errors, and their respective events
+        private List<KeyValuePair<string, string>> errors;
 
 		/*
 		* Constructs a SplunkLogger with (most importantly), URI and Http Event Collector token */
@@ -31,7 +32,7 @@ namespace SplunkClient
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
 			this.uri = newUri;
 
-			// severity levels for SplunkLogger
+			// add severity levels for SplunkLogger
 			levels = new List<string> ();
 			levels.Add ("ERROR");
 			levels.Add ("INFO");
@@ -40,6 +41,7 @@ namespace SplunkClient
 			levels.Add ("WARNING");
 			this.level = "INFO";
             this.sourcetype = "Mobile Application";
+            errors = new List<KeyValuePair<string, string>>();
 
 			sslEnabled = ssl;
 			/*
@@ -86,33 +88,64 @@ namespace SplunkClient
         * Sequential, less verbose, swallows exceptions */
         public void Log (string message)
 		{
-            if (!string.Equals(this.level, "OFF"))
-            {
-                string JSONstr = "{\"event\":{\"message\":\"" + message 
-                    + "\", \"severity\":\"" + level + "\"}, \"sourcetype\":\"" + sourcetype + "\"}";
-
-                HttpContent content = new StringContent(JSONstr);
-                try
-                {
-                    var resp = (HttpResponseMessage)client.PostAsync(
-                        this.uri, content).Result;
-                }
-                catch { }
-            }
+            HandleLog(message, false);
 		}
 
 		/*
 		* Logs a string message/event to Splunk's Http Event Collector, Async */
-		async public Task LogAsync (string message)
+		async public void LogAsync (string message)
 		{
+            /*
             if (!string.Equals(this.level, "OFF"))
             {
-                string JSONstr = "{\"event\":{\"message\":\"" + message + "\", \"severity\":\"" + level + "\"}, \"sourcetype\":\"Mobile Application\"}";
-                HttpContent content = new StringContent(JSONstr);
-
-                var resp = await client.PostAsync(this.uri, content);
+                var resp = await client.PostAsync(this.uri, GetHttpContent(message));
                 resp.EnsureSuccessStatusCode();
             }
+            */
+            await HandleLog(message, true);
 		}
-	}
+
+        async private Task HandleLog(string message, bool async)
+        {
+            if (string.Equals(this.level, "OFF"))
+            {
+                errors.Add(new KeyValuePair<string, string>(
+                    "Cannot send events when SplunkLogger is turned off", message));
+                return;
+            }
+            try
+            {
+                var content = GetHttpContent(message);
+                var response = async ? await client.PostAsync(this.uri, content) :
+                    client.PostAsync(this.uri, content).Result;
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                errors.Add(new KeyValuePair<string, string>(e.Message, message));
+            }
+        }
+
+        /*
+        * returns a JSON populated HttpContent object with the given message */
+        private HttpContent GetHttpContent(string message)
+        {
+            string JSONstr = "{\"event\":{\"message\":\"" + message +
+                "\", \"severity\":\"" + this.level + "\"}, \"sourcetype\":\"" + this.sourcetype + "\"}";
+            return new StringContent(JSONstr);
+        }
+
+        /*
+        * resends all events that caused exceptions */
+        public void ResendErrors()
+        {
+            while (errors.Count > 0)
+            {
+                foreach (var error in errors)
+                {
+                    LogAsync(error.Value);
+                }
+            }
+        }
+    }
 }
