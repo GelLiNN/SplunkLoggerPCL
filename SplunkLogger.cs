@@ -143,7 +143,7 @@ namespace SplunkClient
 	        {
 	            foreach (var error in errors)
 	            {
-	                    LogAsync(error.Value);
+	                LogAsync(error.Value);
 	            }
 	        }
         }
