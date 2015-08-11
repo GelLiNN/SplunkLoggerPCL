@@ -5,7 +5,7 @@ namespace SplunkClient
 {
 	public class TestClient
 	{
-		public static async Task<long> sendMultipleTestEventsAsync(int howMany, SplunkLogger logger)
+		public static async Task<long> SendMultipleTestEventsAsync(int howMany, SplunkLogger logger)
 		{
 			Stopwatch timer = new Stopwatch ();
 			timer.Start ();
