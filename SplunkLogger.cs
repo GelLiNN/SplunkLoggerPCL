@@ -93,16 +93,16 @@ namespace SplunkClient
 
 		/*
 		* Logs a string message/event to Splunk's Http Event Collector, Async */
-		async public void LogAsync (string message)
+		async public Task LogAsync (string message)
 		{
-            /*
+            
             if (!string.Equals(this.level, "OFF"))
             {
                 var resp = await client.PostAsync(this.uri, GetHttpContent(message));
                 resp.EnsureSuccessStatusCode();
             }
-            */
-            await HandleLog(message, true);
+            
+            //await HandleLog(message, true);
 		}
 
 	    async private Task HandleLog(string message, bool async)

@@ -19,3 +19,4 @@ C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.csproj.App.config
 C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.csprojResolveAssemblyReference.cache
 C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.dll
 C:\Users\Kellan Nealy\splunkstuff\obj\Debug\SplunkClient.pdb
+C:\Users\Kellan\PortableLoggingLibs\splunkstuff\obj\Debug\SplunkClient.csprojResolveAssemblyReference.cache
