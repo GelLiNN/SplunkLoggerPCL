@@ -24,11 +24,18 @@ namespace SplunkClient
         // Keeps track of any errors, and their respective events
         private List<KeyValuePair<string, string>> errors;
 
+        // Introducing batching functionality
+        private bool batchingEnabled;
+        private Queue<string> eventBatch;
+        private Stopwatch timer;
+
+
 		/*
 		* Constructs a SplunkLogger with (most importantly), URI and Http Event Collector token */
 		public SplunkLogger (string newUri, string token, bool ssl)
 		{
 			client = new HttpClient ();
+            timer = new Stopwatch();
 			client.DefaultRequestHeaders.Authorization = 
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
 			this.uri = newUri;
