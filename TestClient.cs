@@ -1,23 +1,22 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
 namespace SplunkClient
 {
 	public class TestClient
 	{
-		public static void main(string[] args)
+		public static async Task<long> SendMultipleTestEventsAsync(int howMany, SplunkLogger logger)
 		{
-			SplunkLogger logger = new SplunkLogger ("https://10.80.8.76:8088/services/collector", "81EBB9BA-BEAC-43AF-B482-F683CFBBE68C", true);
-			logger.Log ("This is a test Event");
-			logger.setLevel ("error");
-			logger.Log ("This is a test Error Event");
+			Stopwatch timer = new Stopwatch ();
+			timer.Start ();
 
-			Action log = async () =>
-			{
-				await logger.LogAsync("This is a test Async requested event, it should appear twice in index");
-			};
-			log();
-			log();
+			for (int i = 1; i <= howMany; i++) {
+				string time = timer.ElapsedMilliseconds.ToString();
+				await logger.LogAsync ("This is iPhone test event " + i + " out of " + howMany + ".  It has been " + 
+					time + " millis since requests started.");
+			}
+			timer.Stop ();
+			return timer.ElapsedMilliseconds;
 		}
 	}
 }
