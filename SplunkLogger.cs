@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SplunkClient
 {
@@ -94,15 +95,8 @@ namespace SplunkClient
 		/*
 		* Logs a string message/event to Splunk's Http Event Collector, Async */
 		async public Task LogAsync (string message)
-		{
-            
-            if (!string.Equals(this.level, "OFF"))
-            {
-                var resp = await client.PostAsync(this.uri, GetHttpContent(message));
-                resp.EnsureSuccessStatusCode();
-            }
-            
-            //await HandleLog(message, true);
+		{   
+            await HandleLog(message, true);
 		}
 
 	    async private Task HandleLog(string message, bool async)
@@ -137,15 +131,20 @@ namespace SplunkClient
 	
 	    /*
 	    * resends all events that caused exceptions */
-	    public void ResendErrors()
+	    async public void ResendErrors()
 	    {
 	        while (errors.Count > 0)
 	        {
 	            foreach (var error in errors)
 	            {
-	                LogAsync(error.Value);
+	                await LogAsync(error.Value);
 	            }
 	        }
+        }
+
+        public void ClearErrors()
+        {
+            errors.Clear();
         }
 	}
 }
