@@ -25,9 +25,10 @@ namespace SplunkClient
         private List<KeyValuePair<string, string>> errors;
 
         // Introducing batching functionality
-        private bool batchingEnabled;
+        private bool autoBatchingEnabled;
         private Queue<string> eventBatch;
         private Stopwatch batchTimer;
+        private const long BATCH_INTERVAL = 500;
 
 		/*
 		* Constructs a SplunkLogger with (most importantly), URI and Http Event Collector token */
@@ -38,7 +39,7 @@ namespace SplunkClient
 			client.DefaultRequestHeaders.Authorization = 
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
 			this.uri = newUri;
-            batchingEnabled = false;
+            autoBatchingEnabled = false;
 
 			// add severity levels for SplunkLogger
 			levels = new List<string> ();
@@ -76,7 +77,7 @@ namespace SplunkClient
 
         public void EnableAutoBatching()
         {
-            batchingEnabled = true;
+            autoBatchingEnabled = true;
         }
 
 		/*
@@ -111,6 +112,9 @@ namespace SplunkClient
             await HandleLog(message, true);
 		}
 
+        /*
+        * Sends string message/event to Splunk's Http Event 
+        * Collector, Sync or Async depending on the passed bool*/
 	    async private Task HandleLog(string message, bool async)
 	    {
             if (string.Equals(this.level, "OFF"))
@@ -121,7 +125,7 @@ namespace SplunkClient
             }
             else
             {
-                if (batchingEnabled)
+                if (autoBatchingEnabled)
                 {
                     HandleBatching(message);
                 }
@@ -151,15 +155,19 @@ namespace SplunkClient
 	        return new StringContent(JSONstr);
 	    }
 
+        /*
+        * Adds string events to the eventBatch Queue */
         async private void HandleBatching(string message)
         {
+            //Set up so if client isn't logging, Batches
+            //are NOT being sent every (BATCH_INTERVAL) millis
             long time = batchTimer.ElapsedMilliseconds;
             eventBatch.Enqueue(message);
             if (time == 0)
             {
                 batchTimer.Start();
             }
-            else if (time > 500)
+            else if (time > BATCH_INTERVAL)
             {
                 await SendBatchAsync(eventBatch);
                 batchTimer.Stop();
@@ -167,6 +175,8 @@ namespace SplunkClient
             }
         }
 
+        /*
+        * Sends events in the Queue to this Logger's URI asynchronously */
         async public Task SendBatchAsync(Queue<string> eventBatch)
         {
             string JSONstr = "";
@@ -193,6 +203,8 @@ namespace SplunkClient
 	        }
         }
 
+        /*
+        * Empties the stored list of errors/failed requests */
         public void ClearErrors()
         {
             errors.Clear();
