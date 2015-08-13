@@ -24,14 +24,21 @@ namespace SplunkClient
         // Keeps track of any errors, and their respective events
         private List<KeyValuePair<string, string>> errors;
 
+        // Introducing batching functionality
+        private bool batchingEnabled;
+        private Queue<string> eventBatch;
+        private Stopwatch batchTimer;
+
 		/*
 		* Constructs a SplunkLogger with (most importantly), URI and Http Event Collector token */
 		public SplunkLogger (string newUri, string token, bool ssl)
 		{
 			client = new HttpClient ();
+            batchTimer = new Stopwatch();
 			client.DefaultRequestHeaders.Authorization = 
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
 			this.uri = newUri;
+            batchingEnabled = false;
 
 			// add severity levels for SplunkLogger
 			levels = new List<string> ();
@@ -66,6 +73,11 @@ namespace SplunkClient
 			*/
 			sslEnabled = true;
 		}
+
+        public void enableBatching()
+        {
+            batchingEnabled = true;
+        }
 
 		/*
 		* Changes the severity level of this SplunkLogger */
@@ -128,10 +140,24 @@ namespace SplunkClient
 	            "\", \"severity\":\"" + this.level + "\"}, \"sourcetype\":\"" + this.sourcetype + "\"}";
 	        return new StringContent(JSONstr);
 	    }
+
+        async public Task SendBatchAsync(Queue<string> eventBatch)
+        {
+            string JSONstr = "{";
+            while (eventBatch.Count > 0)
+            {
+                string curMessage = eventBatch.Dequeue();
+                JSONstr += "\"event\":{\"message\":\"" + curMessage +
+                "\", \"severity\":\"" + this.level + "\"},";
+            }
+            JSONstr += "\"sourcetype\":\"" + this.sourcetype + "\"}";
+            HttpContent content = new StringContent(JSONstr);
+            await client.PostAsync(this.uri, content);
+        }
 	
 	    /*
 	    * resends all events that caused exceptions */
-	    async public void ResendErrors()
+	    async public void ResendErrorsAsync()
 	    {
 	        while (errors.Count > 0)
 	        {
