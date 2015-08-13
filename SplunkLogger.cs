@@ -74,7 +74,7 @@ namespace SplunkClient
 			sslEnabled = true;
 		}
 
-        public void enableBatching()
+        public void EnableAutoBatching()
         {
             batchingEnabled = true;
         }
@@ -113,23 +113,33 @@ namespace SplunkClient
 
 	    async private Task HandleLog(string message, bool async)
 	    {
-	        if (string.Equals(this.level, "OFF"))
-	        {
-	            errors.Add(new KeyValuePair<string, string>(
-	                "Cannot send events when SplunkLogger is turned off", message));
-	            return;
-	        }
-	        try
-	        {
-	            var content = GetHttpContent(message);
-	            var response = async ? await client.PostAsync(this.uri, content) :
-	                client.PostAsync(this.uri, content).Result;
-	            response.EnsureSuccessStatusCode();
-	        }
-	        catch (Exception e)
-	        {
-	            errors.Add(new KeyValuePair<string, string>(e.Message, message));
-	        }
+            if (string.Equals(this.level, "OFF"))
+            {
+                errors.Add(new KeyValuePair<string, string>(
+                    "Cannot send events when SplunkLogger is turned off", message));
+                return;
+            }
+            else
+            {
+                if (batchingEnabled)
+                {
+                    HandleBatching(message);
+                }
+                else
+                {
+                    try
+                    {
+                        var content = GetHttpContent(message);
+                        var response = async ? await client.PostAsync(this.uri, content) :
+                            client.PostAsync(this.uri, content).Result;
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch (Exception e)
+                    {
+                        errors.Add(new KeyValuePair<string, string>(e.Message, message));
+                    }
+                }
+            }
 	    }
 	
 	    /*
@@ -141,16 +151,31 @@ namespace SplunkClient
 	        return new StringContent(JSONstr);
 	    }
 
+        async private void HandleBatching(string message)
+        {
+            long time = batchTimer.ElapsedMilliseconds;
+            eventBatch.Enqueue(message);
+            if (time == 0)
+            {
+                batchTimer.Start();
+            }
+            else if (time > 500)
+            {
+                await SendBatchAsync(eventBatch);
+                batchTimer.Stop();
+                batchTimer.Reset();
+            }
+        }
+
         async public Task SendBatchAsync(Queue<string> eventBatch)
         {
-            string JSONstr = "{";
+            string JSONstr = "";
             while (eventBatch.Count > 0)
             {
                 string curMessage = eventBatch.Dequeue();
-                JSONstr += "\"event\":{\"message\":\"" + curMessage +
-                "\", \"severity\":\"" + this.level + "\"},";
+                JSONstr += "{\"event\":{\"message\":\"" + curMessage + "\", \"severity\":\"" + 
+                    this.level + "\"}, \"sourcetype\":\"" + this.sourcetype + "\"}";
             }
-            JSONstr += "\"sourcetype\":\"" + this.sourcetype + "\"}";
             HttpContent content = new StringContent(JSONstr);
             await client.PostAsync(this.uri, content);
         }
