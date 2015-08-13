@@ -36,6 +36,7 @@ namespace SplunkClient
 		{
 			client = new HttpClient ();
             batchTimer = new Stopwatch();
+            eventBatch = new Queue<string>();
 			client.DefaultRequestHeaders.Authorization = 
 				new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
 			this.uri = newUri;
