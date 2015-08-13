@@ -14,7 +14,7 @@ namespace SplunkClient
 	{
 		private string level;
 		private string uri;
-		private HttpClient client; 
+		private HttpClient client;
 		private bool sslEnabled;
         private string sourcetype;
 
@@ -127,7 +127,7 @@ namespace SplunkClient
             {
                 if (autoBatchingEnabled)
                 {
-                    HandleBatching(message);
+                    await HandleBatching(message);
                 }
                 else
                 {
@@ -157,7 +157,7 @@ namespace SplunkClient
 
         /*
         * Adds string events to the eventBatch Queue */
-        async private void HandleBatching(string message)
+        async private Task HandleBatching(string message)
         {
             //Set up so if client isn't logging, Batches
             //are NOT being sent every (BATCH_INTERVAL) millis
