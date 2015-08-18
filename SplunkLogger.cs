@@ -27,7 +27,6 @@ namespace SplunkClient
         // Introducing batching functionality
         private bool batchingEnabled;
         private Queue<string> eventBatch;
-        private Stopwatch batchTimer;
         private long batchInterval;
         private long batchSize;
 
@@ -40,7 +39,6 @@ namespace SplunkClient
         public SplunkLogger(string newUri, string token, bool ssl)
         {
             client = new HttpClient();
-            batchTimer = new Stopwatch();
             eventBatch = new Queue<string>();
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Splunk", token);
@@ -113,6 +111,7 @@ namespace SplunkClient
             this.batchInterval = batchInterval;
             this.batchSize = batchSize;
             batchingEnabled = true;
+            AutoSendBatches();
         }
 
         /*
@@ -139,7 +138,7 @@ namespace SplunkClient
 
         /*
         * Sends string message/event to Splunk's Http Event 
-        * Collector, Sync or Async depending on the passed bool*/
+        * Collector, Sync or Async depending on the passed bool */
         async private Task HandleLog(string message, bool async)
         {
             if (string.Equals(this.level, "OFF"))
@@ -172,19 +171,29 @@ namespace SplunkClient
         }
 
         /*
-        * Asynchronously handles the logic of making and sending event batches*/
+        * Asynchronously handles the logic of making and sending event batches */
         async private Task HandleBatching(string message)
         {
             eventBatch.Enqueue(message);
-            if (batchTimer.ElapsedMilliseconds == 0)
+            if (eventBatch.Count == batchSize)
             {
-                batchTimer.Start();
-            }
-            else if (batchTimer.ElapsedMilliseconds > batchInterval ||
-                eventBatch.Count == batchSize)
-            {
-                batchTimer.Reset();
                 await SendBatchAsync(eventBatch);
+            }
+        }
+
+        /*
+        * Asynchronously handles batching by time interval, runs in background */
+        async private Task AutoSendBatches()
+        {
+            Stopwatch t = new Stopwatch();
+            t.Start();
+            while (batchingEnabled)
+            {
+                await Task.Delay((int)batchInterval);
+                if (eventBatch.Count > 0)
+                {
+                    await SendBatchAsync(eventBatch);
+                }
             }
         }
 
