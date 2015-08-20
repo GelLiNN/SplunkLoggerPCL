@@ -122,7 +122,7 @@ namespace SplunkClient
         }
 
         /*
-		* Logs a string message/event to Splunk's Http Event Collector 
+        * Logs a string message/event to Splunk's Http Event Collector 
         * Sequential, less verbose, swallows exceptions */
         public void Log(string message)
         {
